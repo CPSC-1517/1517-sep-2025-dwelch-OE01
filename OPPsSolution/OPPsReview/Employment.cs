@@ -152,6 +152,24 @@ namespace OPPsReview
         
         public DateTime StartDate { get; private set; }
 
+        ///<summary>
+        ///Property: Level
+        ///validation: none
+        ///datatype: this is an enum (SupervisoryLevel)
+        ///</summary>
+
+        //coded as an auto implemented property
+
+        public SupervisoryLevel Level { get; set; }
+
+        //can an auto-implemented be coded as a fully implemented
+        //private SupervisoryLevel _Level;
+        //public SupervisoryLevel Level
+        //{
+        //    get { return _Level; }
+        //    set { _Level = value; }
+        //}
+
 
 
         //constructors

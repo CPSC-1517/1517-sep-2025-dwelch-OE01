@@ -5,6 +5,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{6F4F8E4B-1361-4F19-B8D8-D38A87665163}|OPPsReview\\OPPsReview.csproj|e:\\github\\cpsc-1517\\1517-sep-2025-dwelch-oe01\\oppssolution\\oppsreview\\employment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6F4F8E4B-1361-4F19-B8D8-D38A87665163}|OPPsReview\\OPPsReview.csproj|solutionrelative:oppsreview\\employment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6F4F8E4B-1361-4F19-B8D8-D38A87665163}|OPPsReview\\OPPsReview.csproj|e:\\github\\cpsc-1517\\1517-sep-2025-dwelch-oe01\\oppssolution\\oppsreview\\supervisorylevel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6F4F8E4B-1361-4F19-B8D8-D38A87665163}|OPPsReview\\OPPsReview.csproj|solutionrelative:oppsreview\\supervisorylevel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,13 +38,25 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SupervisoryLevel.cs",
+              "DocumentMoniker": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\SupervisoryLevel.cs",
+              "RelativeDocumentMoniker": "OPPsReview\\SupervisoryLevel.cs",
+              "ToolTip": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\SupervisoryLevel.cs",
+              "RelativeToolTip": "OPPsReview\\SupervisoryLevel.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABUAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-05T03:13:46.718Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Employment.cs",
               "DocumentMoniker": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\Employment.cs",
               "RelativeDocumentMoniker": "OPPsReview\\Employment.cs",
               "ToolTip": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\Employment.cs",
               "RelativeToolTip": "OPPsReview\\Employment.cs",
-              "ViewState": "AgIAAFIAAAAAAAAAAAAgwFcAAABEAAAAAAAAAA==",
+              "ViewState": "AgIAAJkAAAAAAAAAAAAowJwAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-03T03:17:24.965Z",
               "EditorCaption": ""
