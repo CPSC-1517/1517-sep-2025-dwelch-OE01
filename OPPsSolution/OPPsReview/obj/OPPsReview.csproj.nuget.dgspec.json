@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj": {}
+    "C:\\GitHub\\CPS1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj": {}
   },
   "projects": {
-    "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj": {
+    "C:\\GitHub\\CPS1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj",
+        "projectUniqueName": "C:\\GitHub\\CPS1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj",
         "projectName": "OPPsReview",
-        "projectPath": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj",
-        "packagesPath": "C:\\Users\\Don\\.nuget\\packages\\",
-        "outputPath": "E:\\GitHub\\CPSC-1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\obj\\",
+        "projectPath": "C:\\GitHub\\CPS1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\OPPsReview.csproj",
+        "packagesPath": "C:\\Users\\DWelch\\.nuget\\packages\\",
+        "outputPath": "C:\\GitHub\\CPS1517\\1517-sep-2025-dwelch-OE01\\OPPsSolution\\OPPsReview\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Don\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\DWelch\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
