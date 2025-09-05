@@ -15,7 +15,7 @@ namespace OPPsReview
         //usually associated with a property
         //a data member does not have any built-in validation
         private string _Title;
-        private int _Year;
+        private double _Years;
 
         //properties
         //are associated with a single piece of data.
@@ -99,6 +99,60 @@ namespace OPPsReview
                 }
             }
         }
+
+        ///<summary>
+        ///Property: Years
+        ///validation: the value must be 0 or greater
+        ///datatype: double
+        ///</summary>
+        ///
+
+        public double Years
+        {
+            //notice that the get/return can physically be coded on the same line
+            get { return _Years; }
+
+            set
+            {
+                if (value < 0)
+                {
+                    //in this error message example, the incorrect value is being include
+                    //  within the error message itself
+                    throw new ArgumentException($"The years of {value} is incorrect. Years must be 0 or greater");
+                }
+                else
+                {
+                    _Years = value;
+                }
+            }
+        }
+
+        ///<summary>
+        ///Property: StartDate
+        ///datatype: datetime
+        ///validation: none
+        ///set access: private
+        ///</summary>
+        ///
+
+        //since the access to this property for the mutator is private ANY validation
+        //  for this data will need to be done elsewhere
+        //possible locations for the validation could be in
+        //  a) a constructor
+        //  b) any method that will alter the data
+        //a private mutator will NOT allow alteration of the data via a property for the
+        //  outside user, however, methods within the class will still be able to
+        //  use the property
+
+        //NOTE: the use of a private set is ONLY as an example of using a private set
+        //      this property could easily have has an access level of public
+
+        //this property can be coded as an auto-implemented property
+        //the private is independent of the auto-implemented property
+        
+        public DateTime StartDate { get; private set; }
+
+
 
         //constructors
 
