@@ -35,6 +35,71 @@ namespace OPPsReview
         //    get { return _FastName + " " + _LastName; }
         //}
 
+        //fully implemented properties usually has additional logic
+        //  to execute for control over the data: such as validation
+        //fully implemented properties will have a declared data
+        //  member to store the data into
+
+        //auto implemented properties do not have additional logic
+        //Auto implemented properties do not have a declared
+        //  data member instead the o/s will create on the property's
+        //  behave a storage that is accessible ONLY by the property
+
+
+        ///<summary>
+        ///Property: Title
+        ///datatype: string
+        ///validation: there must be a character in the string
+        ///a property will always have a getter (accessor)
+        ///a property may or maynot have a setter (mutator)
+        /// no mutator the property is consider "read-only" and is
+        ///         usually returning a computed field
+        /// has a mutator, the property will at some point save the data
+        ///     to storage
+        /// the mutator may be public (default) or private
+        ///     public: accessible by outside users of the class
+        ///     private: accessible ONLY within the class, usually
+        ///                 via the constructor or a method
+        /// !!!!! a property DOES NOT have ANY declared incoming parameters !!!!!!
+        /// </summary>
+        /// 
+
+        //fully implemented property
+
+        // string mytitle = myobject.Title;
+        public string Title
+        {
+            get
+            {
+                //accessor (getter)
+                //returns the string associated with this property
+                return _Title;
+            }
+
+            set 
+            {
+                //mutator (setter)
+                //it is within the set that the validation of the data
+                //  is done to determine if the data is acceptable
+                //if all processing of the string is done via the property
+                //  it will ensure that good data is within the associated string
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    //classes typically do not write to the console.
+                    //classes will throw Exceptions that must be handled in a 
+                    //  user friendly fashion by the outside user
+                    throw new ArgumentException("Title", "Title cannot be empty or just blank"); 
+                }
+                else
+                {
+                    //it is a very good practice to remove leading and trailing spaces on strings
+                    //  so that only the required and important characters are stored.
+                    //to do this sanitization use .Trim()
+                    _Title = value.Trim();
+                }
+            }
+        }
+
         //constructors
 
 
