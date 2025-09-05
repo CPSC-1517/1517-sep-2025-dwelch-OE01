@@ -174,7 +174,51 @@ namespace OPPsReview
 
         //constructors
 
+        //your class does not technically need a coded constructor
+        //if you code a constructor for your class you are responsible for coding ALL constructors
+        //if you do not code a constructor then the system will assign the software datatype defaults
+        //  to your variables (data members/auto-implemented properties)
 
+        //syntax: accesslevel constructorname([list of parameters]) { .... }
+        //NOTE: NO return datatype
+        //      the constructorname MUST be the class name
+
+        //Default
+        //simulates the "system defaults"
+
+        public Employment()
+        {
+
+            //if there is no code within this constructor, the actions for setting
+            //  your internal fields will be using the system defaults for the datatype
+
+
+            //optionally
+            // you could assign values to your initial fields within this constructor typically
+            //      using literal values
+            //Why?
+            // your internal fields may have validation attached to the data for the field
+            // this validation is usually within the property
+            // you would wish to have valid data values for your internal fields
+
+            //What is the internal default value for a string? :null
+            //Is null a valid value for the data member _Title? NO
+            //Is there a conflict? YES check the property validation. Null is invalid
+            //  Therefore we MUST assign our own default value to _Title
+
+            //it is a GOOD practice to referrence all class data member via their property
+            //  thus ensuring any coded validation is executed when using the data member
+
+            Title = "unknown"; //this satisfies the property validation
+            Level = SupervisoryLevel.TeamMember; //desired a different initial value
+            StartDate = DateTime.Today; //system default is unaccept
+
+            //Years?
+            //the default is fine (0.0)
+            //HOWEVER< IF YOU WISH you could actually assign the value 0 yourself
+            Years = 0.0;
+
+        }
         //methods
     }
 }

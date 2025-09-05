@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OPPsReview")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0bd75c6829ff3f9a51594bef41332b8f14579e82")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+637d0a9d42cf57dd42aa58e16cf495684c74aacc")]
 [assembly: System.Reflection.AssemblyProductAttribute("OPPsReview")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OPPsReview")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
