@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OPPsReview
 {
-    internal class Employment
+    public class Employment
     {
         //data members
         //aka fields, variables, attributes
@@ -114,7 +114,12 @@ namespace OPPsReview
 
             set
             {
-                if (value < 0)
+               // if (value < 0)
+
+                //replace the above code relation condition test with a static method
+                //when using a static class, one does not instanated the class
+                //  one uses the class name and the method
+                if (!Utilities.IsZeroOrPositive(value))
                 {
                     //in this error message example, the incorrect value is being include
                     //  within the error message itself
