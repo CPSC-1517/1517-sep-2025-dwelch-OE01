@@ -88,7 +88,7 @@ namespace OPPsReview
                     //classes typically do not write to the console.
                     //classes will throw Exceptions that must be handled in a 
                     //  user friendly fashion by the outside user
-                    throw new ArgumentException("Title", "Title cannot be empty or just blank"); 
+                    throw new ArgumentNullException("Title", "Title cannot be empty or just blank"); 
                 }
                 else
                 {
@@ -214,7 +214,7 @@ namespace OPPsReview
             //it is a GOOD practice to referrence all class data member via their property
             //  thus ensuring any coded validation is executed when using the data member
 
-            Title = "unknown"; //this satisfies the property validation
+            Title = "Unknown"; //this satisfies the property validation
             Level = SupervisoryLevel.TeamMember; //desired a different initial value
             StartDate = DateTime.Today; //system default is unaccept
 
