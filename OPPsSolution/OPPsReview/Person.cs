@@ -8,10 +8,39 @@ namespace OPPsReview
 {
     public class Person
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        private string _FirstName;
+        private string _LastName;
+        public string FirstName 
+        { 
+            get { return _FirstName; } 
+            set
+            {
+                _FirstName = value.Trim();
+            }
+        }
+        public string LastName
+        {
+            get { return _LastName; }
+            set
+            {
+                _LastName = value.Trim();
+            }
+        }
         public ResidentAddress Address { get; set; }
-        public List<Employment> EmploymentPositions { get; set; }
+
+        //consider making EmploymentPositions private set (must use method)
+        //  do we wish to allow the entire employment collection to be replaced?
+        //  consider, is the mutator set to private?
+        //      if so, direct altering is not possible (access trouble)
+        //      if private, any code to actually attempt to use the mutator (set) will NOT even compile
+  
+        public List<Employment> EmploymentPositions { get; private set; }
+
+        public string FullName
+        {
+            get { return LastName + ", " + FirstName; }
+            //get { return $"{LastName}, {FirstName}"; }
+        }
 
         public Person()
         {
@@ -26,8 +55,12 @@ namespace OPPsReview
         public Person(string firstname, string lastname, ResidentAddress address, 
                         List<Employment> employmentpositions)
         {
-            FirstName = firstname.Trim();
-            LastName = lastname.Trim();
+            if (string.IsNullOrWhiteSpace(firstname))
+                throw new ArgumentNullException("FirstName", "First name cannot be missing or blank.");
+            if (string.IsNullOrWhiteSpace(lastname))
+                throw new ArgumentNullException("LastName", "Last name cannot be missing or blank.");
+            FirstName = firstname; // the Trim() can be Refatored out of the constructor as it is in the Property
+            LastName = lastname; //.Trim();
             Address = address;
             if (employmentpositions == null)
             {
