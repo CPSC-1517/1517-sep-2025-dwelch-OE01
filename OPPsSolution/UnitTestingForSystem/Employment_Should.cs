@@ -224,7 +224,7 @@ namespace UnitTestingForSystem
         //}
 
         [Fact]
-        public void When_Creaing_New_Greedy_Instance_Throws_StartDate_Future_Exception()
+        public void When_Creating_New_Greedy_Instance_Throws_StartDate_Future_Exception()
         {
             //Where - Arrange setup
             DateTime StartDate = DateTime.Parse("4902/10/24");
@@ -265,20 +265,20 @@ namespace UnitTestingForSystem
             action.Should().Throw<ArgumentNullException>();
         }
 
-        ////DO NOT use if your class demonstration has made Years set private
-        //[Fact]
-        //public void Directly_Change_Years_Throws_Exception()
-        //{
-        //    //Where - Arrange setup
-        //    Employment sut = new Employment("SAS Lead", SupervisoryLevel.TeamMember, DateTime.Today, 0);
+        //DO NOT use if your class demonstration has made Years set private
+        [Fact]
+        public void Directly_Change_Years_Throws_Exception()
+        {
+            //Where - Arrange setup
+            Employment sut = new Employment("SAS Lead", SupervisoryLevel.TeamMember, DateTime.Today, 0);
 
-        //    //When - Act execution
-        //    Action action = () => sut.Years = -5.5;
+            //When - Act execution
+            Action action = () => sut.Years = -5.5;
 
-        //    //Then - Assert check
-        //    action.Should().Throw<ArgumentException>().WithMessage("*-5.5*");
-        //   // action.Should().Throw<ArgumentOutOfRangeException>().WithMessage("*-5.5*");
-        //}
+            //Then - Assert check
+            action.Should().Throw<ArgumentException>().WithMessage("*-5.5*");
+            // action.Should().Throw<ArgumentOutOfRangeException>().WithMessage("*-5.5*");
+        }
 
         ////[Fact]
         ////public void Set_The_SupervisoryLevel_Throws_Exception()

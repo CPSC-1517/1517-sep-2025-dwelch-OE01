@@ -15,6 +15,8 @@ namespace OPPsReview
             get { return _FirstName; } 
             set
             {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException("FirstName", "First name cannot be missing or blank.");
                 _FirstName = value.Trim();
             }
         }
@@ -23,6 +25,8 @@ namespace OPPsReview
             get { return _LastName; }
             set
             {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException("LastName", "Last name cannot be missing or blank.");
                 _LastName = value.Trim();
             }
         }
@@ -55,10 +59,13 @@ namespace OPPsReview
         public Person(string firstname, string lastname, ResidentAddress address, 
                         List<Employment> employmentpositions)
         {
-            if (string.IsNullOrWhiteSpace(firstname))
-                throw new ArgumentNullException("FirstName", "First name cannot be missing or blank.");
-            if (string.IsNullOrWhiteSpace(lastname))
-                throw new ArgumentNullException("LastName", "Last name cannot be missing or blank.");
+            //the name validation is not required in the constructor as it is 
+            //      also in the property and the constructor sends the incoming
+            //      parameter value to the property and NOT directly into the data member
+            //if (string.IsNullOrWhiteSpace(firstname))
+            //    throw new ArgumentNullException("FirstName", "First name cannot be missing or blank.");
+            //if (string.IsNullOrWhiteSpace(lastname))
+            //    throw new ArgumentNullException("LastName", "Last name cannot be missing or blank.");
             FirstName = firstname; // the Trim() can be Refatored out of the constructor as it is in the Property
             LastName = lastname; //.Trim();
             Address = address;
@@ -70,6 +77,19 @@ namespace OPPsReview
             {
                 EmploymentPositions = employmentpositions;
             }
+        }
+
+        public void ChangeFullName(string firstname, string lastname)
+        {
+            //using best practises, the incoming data will be stored
+            //  via the properties
+            FirstName = firstname;
+            LastName = lastname;
+        }
+
+        public void AddEmployment(Employment employment)
+        {
+            EmploymentPositions.Add(employment);
         }
     }
 }

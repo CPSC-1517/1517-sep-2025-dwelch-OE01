@@ -228,7 +228,7 @@ namespace TDDxUnitTesting
         }
         //directly change the address on an instance of Person 
         [Fact]
-        public void Successfully_Change_Addres_Via_Property()
+        public void Successfully_Change_Address_Via_Property()
         {
             //Arrange
             ResidentAddress expectedAddress = new ResidentAddress(321, "Sunflower St.", "Regina", "Sk", "S5G9R2");
@@ -240,6 +240,21 @@ namespace TDDxUnitTesting
 
             //Assert
             sut.Address.Should().Be(expectedAddress);
+        }
+
+        [Fact]
+        public void Successfully_Change_Address_To_Null_Via_Property()
+        {
+            //Arrange
+          
+            Person sut = new Person("Roy", "Nett",
+                            new ResidentAddress(123, "Maple St.", "Edmonton", "AB", "T6Y7U8"), null);
+
+            //Act
+            sut.Address = null;
+
+            //Assert
+            sut.Address.Should().BeNull();
         }
 
         //consider making EmploymentPositions private set (must use method)
@@ -269,13 +284,185 @@ namespace TDDxUnitTesting
 
         #endregion
         #region Exception Testing
+        //throw ArgumentNullException if first name is missing went changed via the property
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void Throw_ArugmentNullException_When_FirstName_Missing_Changed_Via_Property(string name)
+        {
+            // Arrange
+            Person sut = new Person("Scuba", "Steve", 
+                   new ResidentAddress(123, "Maple St.", "Calgary", "AB", "T3H 4W1"), null);
+
+            // Act
+            Action action = () => sut.FirstName = name;
+
+            // Assert
+            action.Should().Throw<ArgumentNullException>();
+
+        }
+        //throw ArgumentNullException if first name is missing went changed via the property
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void Throw_ArugmentNullException_When_LastName_Missing_Changed_Via_Property(string name)
+        {
+            // Arrange
+            Person sut = new Person("Scuba", "Steve",
+                   new ResidentAddress(123, "Maple St.", "Calgary", "AB", "T3H 4W1"), null);
+
+            // Act
+            Action action = () => sut.LastName = name;
+
+            // Assert
+            action.Should().Throw<ArgumentNullException>();
+
+        }
         #endregion
         #endregion
 
         #region Methods
         #region Valid Data
+        //successfully change both first and last name using the ChangeFullName method
+        [Fact]
+        public void Change_Both_First_And_Last_Name_Using_ChangeFullName_Method()
+        {
+            //Arrange
+            Person sut = new Person("Tyler", "Ewert", null, null);
+            string expectedFullName = "Uwert, Taylor";
+
+            //Act
+            sut.ChangeFullName("Taylor", "Uwert");
+
+            //Assert
+            sut.FullName.Should().Be(expectedFullName);
+            //sut.FirstName.Should().Be("Taylor");
+            //sut.LastName.Should().Be("Uwert");
+
+        }
+
+        [Fact]
+        //successfully add the first employment to the person
+        public void Successfully_Add_First_Emploment_To_Person_via_AddEmployment()
+        {
+            //Arrange
+            Person sut = new Person("Brad", "Lindgren", null, null);
+
+            //create the Employee instance to be added to Person
+            //remember Employment has been completely tested
+            Employment newEmployment = new Employment("PG II", SupervisoryLevel.TeamLeader,
+                                        DateTime.Parse("2020/04/04"));
+            //expected results
+            //one needs to test the collection of Person once the method
+            //      has been executed
+            List<Employment> expectedEmploymentPositions = new List<Employment>();
+            //also need to have the instance in the list
+            expectedEmploymentPositions.Add(newEmployment);
+            //also need to know the expected count of instances in the list
+            int expectedEmploymentPositionCount = 1;
+
+
+            //Act
+            sut.AddEmployment(newEmployment);
+
+            //Assert
+            //one could check all fields of Person (first and last name, address)
+            //  BUT these properties have already be completely tested and as good
+
+            //examine the current contents within EmploymentPositions to see if they are correct
+            //best practice: check the collection count first, if it fails then there is no need
+            //                  to check the collection
+            sut.EmploymentPositions.Count.Should().Be(expectedEmploymentPositionCount);
+
+            //now that you know the correct number of Employment instances exist, the next
+            //  check is the instance(s) themselves
+            //Are they the instance(s) that were passed into the method
+            sut.EmploymentPositions.Should().ContainInConsecutiveOrder(expectedEmploymentPositions);
+
+        }
+
+        [Fact]
+        //successfully add the next employment to the person
+        //we do not know if this nex employment is the 2nd, 3rd, 4th, ...
+        public void Successfully_Add_Another_Emploment_To_Person_via_AddEmployment()
+        {
+            //Arrange
+           
+            //create the Employee instance to be added to Person
+            //remember Employment has been completely tested
+            Employment oneEmployment = new Employment("PG I", SupervisoryLevel.TeamMember,
+                                        DateTime.Parse("2013/10/10"), 6.5);
+            Employment twoEmployment = new Employment("PG II", SupervisoryLevel.TeamLeader,
+                                        DateTime.Parse("2020/04/04"));
+            //all of these past employment instances will need to exist in the 
+            //  EmploymentPositions collection
+            List<Employment> currentEmployments = new List<Employment>();
+            currentEmployments.Add(oneEmployment);
+            currentEmployments.Add(twoEmployment);
+
+            //now we can create the Person instance
+            Person sut = new Person("Brad", "Lindgren", null, currentEmployments);
+
+
+            //expected results
+            Employment nextEmployment = new Employment("Sup I", SupervisoryLevel.Supervisor,
+                                       DateTime.Today);
+            //one needs to test the collection of Person once the method
+            //      has been executed
+            List<Employment> expectedEmploymentPositions = new List<Employment>();
+            //also need to have the instance in the list
+            expectedEmploymentPositions.Add(oneEmployment);
+            expectedEmploymentPositions.Add(twoEmployment);
+            expectedEmploymentPositions.Add(nextEmployment);
+            //also need to know the expected count of instances in the list
+            int expectedEmploymentPositionCount = 3;
+
+
+            //Act
+            sut.AddEmployment(nextEmployment);
+
+            //Assert
+            //one could check all fields of Person (first and last name, address)
+            //  BUT these properties have already be completely tested and as good
+
+            //examine the current contents within EmploymentPositions to see if they are correct
+            //best practice: check the collection count first, if it fails then there is no need
+            //                  to check the collection
+            sut.EmploymentPositions.Count.Should().Be(expectedEmploymentPositionCount);
+
+            //now that you know the correct number of Employment instances exist, the next
+            //  check is the instance(s) themselves
+            //Are they the instance(s) that were passed into the method
+            sut.EmploymentPositions.Should().ContainInConsecutiveOrder(expectedEmploymentPositions);
+
+        }
         #endregion
         #region Exception Testing
+        //throw exception went using ChangeFullName within invalid data for first and/or last name
+        [Theory]
+        [InlineData(null, "Doe")]
+        [InlineData("", "Doe")]
+        [InlineData("   ", "Doe")]
+        [InlineData("John", null)]
+        [InlineData("John", "   ")]
+        [InlineData("John", "")]
+
+        public void Throw_ArgumentNullException_When_Changing_FullName_With_Invalid_Inputs(string firstName, string lastName)
+        {
+
+            // Arrange
+            Person sut = new Person("Brad", "Lindgren", null, null);
+
+            // Act
+            Action action = () => sut.ChangeFullName(firstName, lastName);
+
+            // Assert
+            action.Should().Throw<ArgumentNullException>();
+
+        }
+
         #endregion
         #endregion
     }
