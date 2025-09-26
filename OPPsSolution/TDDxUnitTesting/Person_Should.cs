@@ -463,6 +463,56 @@ namespace TDDxUnitTesting
 
         }
 
+        //throw exception when no data passed to AddEmployment
+        //check the exception message contains a specific set of words
+
+        [Fact]
+        public void Throw_Exception_When_Adding_Employment_With_Missing_Data()
+        {
+            //Arrange
+            Person sut = new Person("Brad", "Lindgren", null, null);
+
+            //Act
+            Action action = () => sut.AddEmployment(null);
+
+
+            //Assert
+            //one can test the contents of the error message being thrown
+            //this is done using the .WithMessage(string)
+            //a substring of the error message can be check using *.....* for the string
+            //one can use string interpolation with the creation of the string
+            action.Should().Throw<ArgumentNullException>().WithMessage("*missing data*");
+
+        }
+
+        //do not load a duplicate employment record to the collection
+        [Fact]
+        public void Throw_Exception_When_Adding_A_Duplicate_Employment()
+        {
+            //Arrange
+
+            //starting data for the instance
+            Employment oneEmployment = new Employment("PG I", SupervisoryLevel.TeamMember,
+                                       DateTime.Parse("2013/10/10"), 6.5);
+            Employment duplicate = new Employment("PG II", SupervisoryLevel.TeamLeader,
+                                        DateTime.Parse("2020/04/04"));
+            Employment threeEmployment = new Employment("Sup I", SupervisoryLevel.Supervisor,
+                                       DateTime.Today);
+            List<Employment> currentEmployments = new List<Employment>();
+            currentEmployments.Add(oneEmployment);
+            currentEmployments.Add(duplicate);
+            currentEmployments.Add(threeEmployment);
+            Person sut = new Person("Brad", "Lindgren", null, currentEmployments);
+
+            //the action and expected data
+
+
+            //Act
+            Action action = () => sut.AddEmployment(duplicate);
+
+            //Assert
+            action.Should().Throw<ArgumentException>().WithMessage($"*{duplicate.Title} on {duplicate.StartDate}*");
+        }
         #endregion
         #endregion
     }
