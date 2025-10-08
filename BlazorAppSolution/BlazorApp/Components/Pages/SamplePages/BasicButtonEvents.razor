@@ -9,8 +9,15 @@
 -->
 <PageTitle>Basic Button and Events</PageTitle>
 
+<!--
+    The next line was introduced in .Net 8 core
+    This line indicates the interactivity of the rendering mode
+    We NEED it to MAKE the buttons WORK on the page!!!!!!!
+-->
+@rendermode InteractiveServer
+
 <h1>Basic Button Events</h1>
-<h4 style="color:blue; font-style:italic;"Learning about buttons and events></h4>
+<h4 style="color:blue; font-style:italic;">Learning about buttons and events</h4>
 
 <blockquote style="background-color:aquamarine; margin-left:50px; margin-right:50px;">
     This page will demonstrate the basics of button events. It will
@@ -19,8 +26,101 @@
     demonstrate basic use of C# code to do the processing.
 </blockquote>
 
+<!-- The component page has 2 environments: html and C#
+    The current environment is dictated by the code that is executing
+    You switch between environments by use of the "at" symbol
+    The "at" symbol switching your environment to C#
+    Any html code that is executed automatically returns you to the default environment of Html
 
+    the WelcomeMsg in the following paragraph is in the C# environment and is a variable.
+-->
+
+<p>@WelcomeMsg</p>
+
+<!--
+    the onclick parameter value is a method name in your C# code
+    when the button is pressed by the user; the action is sent to the server via SignalR;
+    the server starts to process the page; the event is executed after the setup by the server
+    of the page; after the action, the page is re-rendered and returned to the browser as html
+-->
+<!--
+    button tag
+    attributes type= submit :cause the page to be sent to the server
+               onclick="eventmethodname"
+    Button text is between the opening and closing tags
+-->
+<button type="submit" @onclick="OnClear">Clear</button>
+
+
+<!--
+    setup some controls to play the game Heads or Tails
+    you will note that the form control is not necessary
+    Like Razor pages, the controls will be html basic controls
+    Like ASP pages, data will automatically be transferred between
+        your C# variables and the html controls
+-->
+<br />
+<br />
+<label for="inputcontrol">Enter a H for Heads or T for Tails:</label>&nbsp;&nbsp;
+
+<!--
+        the bind is indicating the C# variable to be associated with this control
+        data will automatically be transferred between the two items
+    -->
+<input type="text" id="inputcontrol" placeholder="eg: H" @bind="inputValue" />&nbsp;&nbsp;
+<button type="submit" @onclick="OnFlip" class="btn btn-outline-primary rounded-pill" style="width:300px;">Coin Flip</button>
 
 @code {
+    /*
+        * the comment in this block, as everything in this coding block, is C#
+        * the directive @code indicates the coding block
+        */
 
+        /*
+         * variables tied to a control are created within the coding block
+         * data is automatically moved between the control and the variable
+         */
+
+    private string WelcomeMsg = "";
+    private string inputValue = "";
+
+    //there are special events already created for the blazor component
+    // one is the ability to execute code as the page is 1st created
+    // the OnInitialized() method, is executed when the page is 1st created,
+    //      IT DOES NOT EXECUTE AGAIN IF YOU REMAIN ON THE PAGE!!!
+    // it can be used to place special messages on the appearance of a page
+    //  or  initialize  variables on your page
+
+    protected override void OnInitialized()
+    {
+        //the base class has a default method for OnInitialized()
+        //the default method does your base setup
+        //it is strongly suggested that you DO NOT remove this statement
+        base.OnInitialized();
+
+        //following the basic setup, you can customize your page and its variable values
+        WelcomeMsg = $"Let's get started on day {DateTime.Today.ToShortDateString()} at {DateTime.Now.ToShortTimeString()}";
+    }
+
+    protected void OnClear()
+    {
+        WelcomeMsg = "remaining on the page";
+    }
+
+    protected void OnFlip()
+    {
+        //this event will play the game heads (0) or tails (1)
+        //the event will generate a random heads or tails value
+        //  to compare to the entered value
+        //display the results in the WelcomeMsg string.
+
+        //empty old messages
+        WelcomeMsg = "";
+
+        //setup the random flip
+        Random rnd = new Random();
+        int flip = rnd.Next(0, 2); //generate a value of 0 ro 1; the upper limit is excluded
+
+
+    }
 }
