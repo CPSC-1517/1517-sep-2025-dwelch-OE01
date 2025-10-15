@@ -121,6 +121,40 @@
         Random rnd = new Random();
         int flip = rnd.Next(0, 2); //generate a value of 0 ro 1; the upper limit is excluded
 
-
+        //validate the incoming data
+        if(inputValue.ToUpper().Trim().Equals("H") ||
+           inputValue.ToUpper().Trim().Equals("T"))
+        {
+            //determine what the computer flipped
+            if (flip == 0)
+            {
+                //computer has heads
+                //the user input (flip quess) is in variable link to the input control: inputValue
+                if(inputValue.ToUpper().Trim().Equals("H"))
+                {
+                    WelcomeMsg = "You guessed the computer flip. You win.";
+                }
+                else
+                {
+                    WelcomeMsg = "You did not guessed the computer flip. You lose.";
+                }
+            }
+            else
+            {
+                //computer has tails
+                if (inputValue.ToUpper().Trim().Equals("T"))
+                {
+                    WelcomeMsg = "You guessed the computer flip. You win.";
+                }
+                else
+                {
+                    WelcomeMsg = "You did not guessed the computer flip. You lose.";
+                }
+            }
+        }
+        else
+        {
+            WelcomeMsg = "You did not enter an H or T";
+        }
     }
 }
