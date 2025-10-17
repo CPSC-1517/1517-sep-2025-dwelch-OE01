@@ -59,22 +59,24 @@ check if there are any error messages, if so display them
 
 @if(errorMsgs.Count > 0)
 {
-    <p>Please fix the following issues:</p>
-    <ul>
-        @foreach(var error in errorMsgs)
-        {
-            <!--
-                due to the structure of a Dictionary entry
-                there are two components: key and value
-                Here we wish to just use the value
+    <div class="alert alert-danger">
+        <p>Please fix the following issues:</p>
+        <ul>
+            @foreach(var error in errorMsgs)
+            {
+                <!--
+                    due to the structure of a Dictionary entry
+                    there are two components: key and value
+                    Here we wish to just use the value
 
-                If this was a List collection there is only
-                one component, the string
-                therefore you would NOT need the .Value
-                -->
-            <li>@error.Value</li>
-        }
-    </ul>
+                    If this was a List collection there is only
+                    one component, the string
+                    therefore you would NOT need the .Value
+                    -->
+                <li>@error.Value</li>
+            }
+        </ul>
+    </div>
 }
 
 <!--
@@ -201,14 +203,14 @@ each row is stack top to bottom
             &nbsp;&nbsp;
             <button type="submit" class="btn btn-outline-secondary rounded-pill"
                     @onclick="OnClear">
-                Submit
+                Clear
             </button>
         </div>
     </div>
 </fieldset>
 
 @code {
-    private string feedBackMsg = "sample success message";
+    private string feedBackMsg = "";
 
     //could be using a List<string> as well as this Dictionary
     //private List<string> errorMsgs = new ();
@@ -237,13 +239,75 @@ each row is stack top to bottom
 
     private SupervisoryLevel empLevelR; //radio buttons
 
+    protected override void OnInitialized()
+    {
+        //leave the base call in so that the default initialization is done
+        base.OnInitialized();
+
+        //do your own customized intialization
+        empStartDate = DateTime.Today;
+    }
+
     protected void OnCollect()
     {
-        
+        //clear out all old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        //primitive validation
+        //  presence
+        //  datatype/pattern
+        //  range of values
+
+        //Business Rules (aka your validation requirements)
+        //title must be presence, must have at least one character
+        //start date cannot be in the future
+        //years cannot be less than zero
+
+        if (string.IsNullOrWhiteSpace(empTitle))
+        {
+            //add a entry to the errorMsgs (dictionary)
+            errorMsgs.Add(1, "Title is required");
+        }
+
+        //concern:
+        // if the empStartDate is filled by some process that include time
+        //      one need to be careful about using .Today
+        // DateTime.Today uses 00:00:00 am as the time
+        // DateTime.Now uses hh:mm:ss am/pm as the time
+        //Problem is 2025/10/25 08:30:00 am greater than 2025/10/25 00:00:00 am? Answer: YES!!!!!
+        //Solution to ignore the time of the day
+        //  on solution is to add 1 to Today and thus the day will be the start of the next day
+        if (empStartDate >= DateTime.Today.AddDays(1))
+        {
+            errorMsgs.Add(2, "Date cannot be in the future.");
+        }
+
+        if(empYears < 0) 
+        {
+            errorMsgs.Add(3, "Years cannot be less than zero");
+        }
+
+        if (errorMsgs.Count == 0)
+        {
+            feedBackMsg = "data is good";
+        }
+
     }
 
     protected void OnClear()
     {
+        //clear out all old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
 
+        //reset all of the data entry field to their opening state
+        empTitle = "";
+        empStartDate = DateTime.Today;
+        empYears = 0.0;
+        empLevelR = SupervisoryLevel.Entry;
+        empLevelS = SupervisoryLevel.Entry;
     }
+
+  
 }
