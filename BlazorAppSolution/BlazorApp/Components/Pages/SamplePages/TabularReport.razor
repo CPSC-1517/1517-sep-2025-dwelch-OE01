@@ -1,0 +1,184 @@
+﻿@page "/report"
+@rendermode InteractiveServer
+<PageTitle> Tabular Report</PageTitle>
+
+<h1>Tabular Report</h1>
+<cite>using a scolling tabular report</cite>
+
+<!-- 
+    Employment class is in a different namespace then this application
+    Remember to include any additional needed namespaces 
+-->
+@using OOPsReview;
+
+<!-- blockquote is only here as a teaching aid. You do not necessarily need a 
+    blockquote on your screen-->
+<div class="row">
+    <div class="offset-1 col-md-10">
+        <blockquote style="background-color:gainsboro;">
+            <p>
+                This component will demonstrate file I/O reading a text (csv) file.
+                The access to the file will use relative addressing. This component will read
+                all records from the file, create a collection based on a class (Employment).
+                The collection will be displayed in a tabular form (table). This table will
+                demonstrate scrolling.
+            </p>
+        </blockquote>
+    </div>
+</div>
+
+<!-- feedback and error display area-->
+@if (!string.IsNullOrWhiteSpace(feedBackMsg))
+{
+    <div class="alert alert-success text-center">
+        <p>@feedBackMsg</p>
+    </div>
+}
+
+@if (errorMsgs.Count > 0)
+{
+    <div class="alert alert-danger">
+        <p>Please fix the following issues:</p>
+        <ul>
+            @foreach (var error in errorMsgs)
+            {
+                <!--
+                   This is a List collection 
+                   There is only one component, the string
+                   Therefore you would NOT need the .Value
+                    -->
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+<!-- Table Display area
+
+        3 possible scenarios
+    a) no physical collection has been created
+            - no table should be display on the page
+            - a message should be displayed to the user
+    b) collection physically exists but is empty
+            - a message should be displayed to the user
+            - no table should be display on the page
+    c) collection physically exists and has records to display
+            - the records should be display in the desire output format.
+            - BUT the file could be good or corrupted
+-->
+
+@if (employments == null)
+{
+    <!-- a -->
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <p class="alert alert-info">
+                Open an employment history file.
+            </p>
+        </div>
+    </div>
+}
+else if(employments.Count == 0)
+{
+    <!-- b -->
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <p class="alert alert-info">
+                Employment history file is empty, no data.
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <!-- c -->
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Level</th>
+                <th>Start Date</th>
+                <th>Years</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- the body will display the collection, row by row-->
+            @foreach(var empRow in employments)
+            {
+                <tr>
+                    <td>@empRow.Title</td>
+                    <td>@empRow.Level</td>
+                    <td>@empRow.StartDate</td>
+                    <td>@empRow.Years</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string feedBackMsg = "";
+    private List<string> errorMsgs = new();
+
+    //the file is to supply a collection of Employment instances for display
+    private List<Employment> employments = null;
+
+    //Is there any preset for this page?
+    //Do we wish the user to press a button see the report OR 
+    //      just show the report as the page comes up?
+    //Does the user need to locate and open a file? If so, there are button events to code.
+    //Does the report display a specific file all the time? If so, just display the file, no button events.
+    //In this example we will concentrate just on the display.
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //call a method to read the file
+        Reading();
+    }
+
+    private void Reading()
+    {
+        //clear out old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        //there are a couple of ways to refer to your file and its path
+        //  i) obtain the root path of your application using an injection
+        //      service called IWebHostEnvironment via property injection (see variables)
+        //  ii) use relative addressing starting a the top of your application
+
+        //on this page we will demo (ii)
+        //this addressing of the required file will start at the top
+        //  of your web application
+        //if your file is located within your web site structure there is no need
+        //  to obtain you absolute path to the file, instead, relative addressing
+        //  can be used
+        //syntax: @"./folderpathroute/.../.../filename"
+
+        // string filename = @"./Data/GoodEmployment.csv";
+        // string filename = @"./Data/GoodBadEmployment.csv"; //corrupted file (from exceptions)
+        string filename = @"./Data/EmptyEmployment.csv";
+        // string filename = @"./Data/FileDoesNotExist.csv"; //bad filename (system exception)
+
+        try
+        {
+            if (System.IO.File.Exists(filename))
+            {
+                feedBackMsg = "file to process";
+                employments = new List<Employment>(); //pretend file has been read, collection created
+            }
+            else
+            {
+                // case a
+                errorMsgs.Add($"System.Error: file {filename} does not exist");
+            }
+        }
+        catch (Exception ex)
+        {
+            //for any unexpected system error
+            errorMsgs.Add($"System Error: {ex.Message}");
+        }
+    }
+}
