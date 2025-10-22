@@ -239,6 +239,13 @@ each row is stack top to bottom
 
     private SupervisoryLevel empLevelR; //radio buttons
 
+    private Employment employment; //this variable will be used to create the data record to be used
+    //   in saving the good data from the form
+
+    //Injection variable
+    [Inject]
+    public IWebHostEnvironment webHostEnvironment { get; set; }
+
     protected override void OnInitialized()
     {
         //leave the base call in so that the default initialization is done
@@ -288,11 +295,93 @@ each row is stack top to bottom
             errorMsgs.Add(3, "Years cannot be less than zero");
         }
 
+        //is the data good?
+        //should I continue processing this data?
         if (errorMsgs.Count == 0)
         {
-            feedBackMsg = "data is good";
-        }
+            //what to do with the valid data???
+            //in this example, we will save the data to a csv file.
+            //the csv record layout will be the layout in the Employment ToString()
 
+            //if you are using a class to collect and hold your data
+            //      you need to be concerned with how the class coding handles
+            //      any errors in creating or processing data within the class
+            //this normally means some type of try/catch processing (user friendly error handling)
+            try
+            {
+                //create an instance of Employment to use to write to the data file
+                //the data file record will use the ToString() of Employment
+                //(Note: you could manually in this method create the concatenated string for
+                //      writing)
+                //Remember if an error occurs while creating your instance, the instance will
+                //  throw an exception; which should be caught by the catches below.
+                employment = new Employment(empTitle, empLevelS, empStartDate, empYears);
+
+                //write the class data as a string to a csv text file
+                // required:
+                // a) know the location of the file (name)
+                // b) the technique to use in writing to the file
+                //    there are several ways to write to the file
+                //      a) StreamWriter/StreamReader
+                //      b) using the System.IO.File methods
+                //           (handles the streaming of the data)
+
+                //there are a couple of ways to refer to your file and its path
+                //  i) obtain the root path of your application using an injection
+                //      service called IWebHostEnvironment via property injection (see variables)
+                //  ii) use relative addressing starting a the top of your application (see report page)
+
+                string appPathName = webHostEnvironment.ContentRootPath; //the top of  the web application
+
+                //WARNING: the folder slash for your path can be both a forward or back slash
+                //              on a PC BUT for an Apple machine, you must use the forward slash (/)
+                string csvFilePathName = $@"{appPathName}/Data/GoodEmployment.csv";
+
+                //Prep line to write to the file
+
+                //write the data from the employment instance (ToString) as a line to the csv file
+                //since the string does not contain a line feed character, we will need to concatenate
+                //  the character (\n)
+                string line = $"{employment.ToString()}\n";
+
+                //Write to the file
+
+                //WARNING: when you use the System.IO.File you MUST use the
+                //          fully qualified naming to the class method you wish
+                //          to use.
+                //          Fully qualified naming includes namespace.methodOrProperty
+                //         you can not get by just using a reference to the
+                //           namespace at the top of your code (using System.IO;)
+
+                //the System.IO.File method will be AppendAllText(filepathname,string)
+                // AppendAllText will
+                //   a) create the file if it does not exist
+                //   b) opens
+                //   c) writes the text
+                //   d) closes
+                System.IO.File.AppendAllText(csvFilePathName, line);
+
+                //talk to your user
+                feedBackMsg = "Submit accepted";
+
+            }
+            catch (ArgumentNullException ex)
+            {
+                //is a specific error message for a specific error type
+                errorMsgs.Add(5, $"Data Missing Error: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                //is a specific error message for a specific error type
+                errorMsgs.Add(5, $"Bad Data Value Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                //is the default general bucket for all error messages
+                errorMsgs.Add(4, $"System Error: {ex.Message}");
+            }
+           
+        }
     }
 
     protected void OnClear()
