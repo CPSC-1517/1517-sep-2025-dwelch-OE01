@@ -92,28 +92,51 @@ else if(employments.Count == 0)
 else
 {
     <!-- c -->
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Level</th>
-                <th>Start Date</th>
-                <th>Years</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- the body will display the collection, row by row-->
-            @foreach(var empRow in employments)
-            {
-                <tr>
-                    <td>@empRow.Title</td>
-                    <td>@empRow.Level</td>
-                    <td>@empRow.StartDate</td>
-                    <td>@empRow.Years</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @*        
+        create the table to display the data.
+
+        //to reduce the number of data rows being displayed there are two techniques
+        //a) pagination
+        //b) scrolling
+
+        //this example uses the quick and easy technique of scrolling
+        //Note the table is surrounded by a div tag
+        //     on the div tag is 2 parameters
+        //      the class causes the scroll (built into bootstrap)
+        //      the style specifies the height of the display area
+        //to stick the Thead of the table in place
+        //      add the following styling to the thead tag:
+        //          style="position: sticky; top: 0; background-color:white;"
+
+        //depending on the zoom of window you may seem to lose some of the last line
+    *@
+    <div class="row">
+        <div class="offset-3 col-md-6 overflow-scroll" style="height: 450px;">
+            <table class="table table-striped">
+                <thead style="position:sticky; top: 0; background-color: white;">
+                    <tr>
+                        <th>Title</th>
+                        <th>Level</th>
+                        <th>Start Date</th>
+                        <th>Years</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- the body will display the collection, row by row-->
+                    @foreach (var empRow in employments)
+                    {
+                        <tr>
+                            <td>@empRow.Title</td>
+                            <td>@empRow.Level</td>
+                            <td>@empRow.StartDate.ToString("MMM dd, yyyy")</td>
+                            <td>@empRow.Years</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
 }
 
 @code {
@@ -158,16 +181,39 @@ else
         //syntax: @"./folderpathroute/.../.../filename"
 
         // string filename = @"./Data/GoodEmployment.csv";
-        // string filename = @"./Data/GoodBadEmployment.csv"; //corrupted file (from exceptions)
-        string filename = @"./Data/EmptyEmployment.csv";
+           string filename = @"./Data/GoodBadEmployment.csv"; //corrupted file (from exceptions)
+        // string filename = @"./Data/EmptyEmployment.csv";
         // string filename = @"./Data/FileDoesNotExist.csv"; //bad filename (system exception)
 
         try
         {
             if (System.IO.File.Exists(filename))
             {
-                feedBackMsg = "file to process";
-                employments = new List<Employment>(); //pretend file has been read, collection created
+                //create an instance to the collection of history records
+                employments = new List<Employment>();
+
+                //read the file and create the collection
+                Employment employment = null;
+                Array userdata = null;
+
+                userdata = System.IO.File.ReadAllLines(filename);
+
+                //the Employment class has in it a method that will validate the
+                //  string is properly formatted and will convert the string to an
+                //  instance of Employment
+                //if the string is not in the correct format, or a validation error
+                //  exists in the data, the Employment class will throw an exception
+
+                //traverse the array
+                //ensure that is sufficient data on the line to create the required instance (inside .Parse)
+                //create the employment instance  (inside .Parse)
+
+                foreach(string line in userdata)
+                {
+                    employment = Employment.Parse(line); //if good, get an instance; if bad, goes to catch
+                    //add to the reporting collecting
+                    employments.Add(employment);
+                }
             }
             else
             {
@@ -175,10 +221,26 @@ else
                 errorMsgs.Add($"System.Error: file {filename} does not exist");
             }
         }
+        catch (ArgumentNullException ex)
+        {
+            //for any argument null  error
+            errorMsgs.Add($"Missing Data Error: {ex.Message}");
+        }
+        catch (ArgumentException ex)
+        {
+            //for any bad data value  error
+            errorMsgs.Add($"Bad Data Error: {ex.Message}");
+        }
+        catch (FormatException ex)
+        {
+            //for any bad formatting error
+            errorMsgs.Add($"Record Format Error: {ex.Message}");
+        }
         catch (Exception ex)
         {
             //for any unexpected system error
             errorMsgs.Add($"System Error: {ex.Message}");
         }
+      
     }
 }
