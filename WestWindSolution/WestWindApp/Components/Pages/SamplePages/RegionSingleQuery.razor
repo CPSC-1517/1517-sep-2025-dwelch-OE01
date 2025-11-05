@@ -1,0 +1,208 @@
+﻿@page "/singlequery"
+<PageTitle>Single DB Query</PageTitle>
+
+<!-- 
+
+REMEMBER!!!!!!!!!!!!!!!
+if you have button you NEED the following directive so the button work
+-->
+@rendermode InteractiveServer
+
+<!-- Additional Namespaces-->
+@using WestWindSystem.BLL
+@using WestWindSystem.Entities
+
+<h1>Region: Single Query</h1>
+<cite>.....a single record query from the database</cite>
+
+<br/><br/>
+
+@if (feedBackMsg.Length > 0)
+{
+    <div class="alert alert-info">
+        <p>@feedBackMsg</p>
+    </div>
+}
+
+@if (errorMsgs.Count > 0)
+{
+    <div class="alert alert-danger">
+        <p>Please fix the following issues:</p>
+        <ul>
+            @foreach (var error in errorMsgs)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+<br />
+<br />
+<!-- create the form for the query-->
+@*
+    form area
+        standard html controls
+        use bootstrap for formatting
+        form will be two column
+*@
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- this column will hold the query input controls and buttons-->
+        <p><strong>Input query controls and buttons</strong></p>
+        <label for="regionid">Enter the region id:</label>&nbsp;&nbsp;
+        <input id="regionid" type="number" @bind="entryarg"
+              style="width: 100px;" />&nbsp;&nbsp;
+        <button type="submit" @onclick="GetByEntry"
+                class="btn btn-outline-primary rounded-pill">
+            Fetch By Entry    
+        </button>
+        <br/><br/>
+        <label for="selectid">Select a the region:</label>&nbsp;&nbsp;
+        <select id="selectid" @bind="selectionarg">
+            <!-- prompt line-->
+            <option value="0">...select...</option>
+            <!-- generate the remaining list from a collection of Region records 
+                this collection for the loop will be a collection returned
+                    from the database
+                remember this should ONLY be consider IF your collection
+                    for the control is small, consider an upper limit of 100 records
+            -->
+            @foreach(var item in regionList)
+            {
+                <option value="@item.RegionID">@item.RegionDescription</option>
+            }
+        </select>&nbsp;&nbsp;
+        <button type="submit" @onclick="GetBySelection"
+                class="btn btn-outline-primary rounded-pill">
+            Fetch By Selection
+        </button>
+    </div>
+    <div class="col-md-6">
+        <!-- this column will hold the query result output
+             no output attempt will be done, unless the page actually
+                has something to display
+        -->
+        @if (queryInfo != null)
+        {
+            <p>Region id: @queryInfo.RegionID</p>
+            <p>Region Description: @queryInfo.RegionDescription</p>
+        }
+
+
+    </div>
+</div>
+@code {
+    private string feedBackMsg = "";
+    private List<String> errorMsgs = new();
+
+    // input control variables
+    private int entryarg = 0;
+    private int selectionarg = 0;
+
+    // variable to hold database data
+    List<Region> regionList = new();
+    Region queryInfo = null;
+
+
+    //inject any needed services
+    [Inject]
+    public RegionServices _regionServices { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //consume a service method to obtain the region list from the database
+        regionList = _regionServices.Region_GetAll();
+    }
+
+    // button event methods
+    private void GetByEntry()
+    {
+        //clear all old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        //validaton??
+        //region id needs to be > 0
+        //region id is a pkey value
+
+        //one could also place the min attribute on the input control itself
+        //  which would mean this validation is done on the client side in the bowser
+        if (entryarg <= 0)
+        {
+            feedBackMsg = "Region id must be greater than 0.";
+        }
+        else
+        {
+            //data is valid
+            //since your are leaving this project to execute
+            //  an action on another project, you need to
+            //  consider the a system error could occur
+
+            //this means you need to have user friendly error handling
+
+            try
+            {
+                //consume your required service (do the query)
+                queryInfo = _regionServices.Region_GetByID(entryarg);
+
+                //test the results
+                if (queryInfo == null)
+                {
+                    //nothing found
+                    feedBackMsg = $"No region was found for the id: {entryarg}";
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMsgs.Add($"System Error: {ex.Message}");
+            }
+        }
+    }
+
+    private void GetBySelection()
+    {
+        //clear all old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        //validaton??
+        //selection needs to be > 0
+        //0 is the prompt line
+
+        if (selectionarg == 0)
+        {
+            feedBackMsg = "You must select a region to view";
+        }
+        else
+        {
+            //selection is valid
+            //since your are leaving this project to execute
+            //  an action on another project, you need to
+            //  consider the a system error could occur
+
+            //this means you need to have user friendly error handling
+
+            try
+            {
+                //consume your required service (do the query)
+                queryInfo = _regionServices.Region_GetByID(selectionarg);
+
+                //test the results
+                //the likelyhood of this failure is next to 0
+                if (queryInfo == null)
+                {
+                    //nothing found
+                    feedBackMsg = $"No region was found for the selecton";
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMsgs.Add($"System Error: {ex.Message}");
+            }
+        }
+    }
+}
