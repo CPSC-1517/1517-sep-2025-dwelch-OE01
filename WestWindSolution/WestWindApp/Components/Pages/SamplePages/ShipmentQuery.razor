@@ -1,0 +1,37 @@
+﻿@page "/tabularreport"
+<PageTitle>Tabular Query Report</PageTitle>
+@rendermode InteractiveServer
+
+<!-- Additional Namespaces-->
+@using WestWindSystem.BLL;
+@using WestWindSystem.Entities;
+
+
+<h1>Shipment Query</h1>
+<cite>... tabular report using database data</cite>
+
+<br />
+
+@if (feedBackMsg.Length > 0)
+{
+    <div class="alert alert-info">
+        <p>@feedBackMsg</p>
+    </div>
+}
+
+@if (errorMsgs.Count > 0)
+{
+    <div class="alert alert-danger">
+        <p>Please fix the following issues:</p>
+        <ul>
+            @foreach (var error in errorMsgs)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+@code {
+    private string feedBackMsg = "";
+    private List<String> errorMsgs = new();
+}
