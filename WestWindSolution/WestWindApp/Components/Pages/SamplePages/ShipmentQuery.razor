@@ -75,6 +75,23 @@
             //      items per page: itemsPerPage
             //      collection to hold records that will be displayed
 
+            //the shipment record has a field called ShipVia which is foreign key (1, 2, 3, etc)
+            //displaying that is meaningless to someone reading the data unless they were familiar with
+            //      the pkey value associated with each company
+            //solution: display the company name
+            //Problem: the name is in a different table
+
+            //If you look at the entities, records with fields used in sql scheme relationships
+            //      have virtual navigational properties (see bottom of entity)
+            //These properties allow you to have access to data in the related table
+
+            //How to use
+
+            //When you use the property just treat it as the name of an object so accessing the
+            //      desired field in the related table just needs the dot (.) operator
+            //In this example, the property is ShipViaNavigation which points to the Shippers table
+            //      and the desired field from the Shippers table was CompanyName
+
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -92,8 +109,9 @@
                             <td>@item.ShipmentID</td>
                             <td>@item.OrderID</td>
                             <td>@item.ShippedDate</td>
-                            <td>@item.ShipVia</td>
-                            <td>@(string.Format("{0:#,##0.00}",item.FreightCharge))</td>
+                            @* <td>@item.ShipVia</td> *@
+                            <td>@item.ShipViaNavigation.CompanyName</td>
+                            <td align="right">@(string.Format("{0:#,##0.00}",item.FreightCharge))</td>
                         </tr>
                     }
                 </tbody>
@@ -112,9 +130,64 @@
     private int montharg = 0;
 
     private List<Shipment> shipmentInfo = null;
+    private List<Shipper> shipperInfo = null;
+
+    [Inject]
+    public ShipmentServices _shipmentServices { get; set; }
+    [Inject]
+    public ShipperServices _shipperServices { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //reasonable values for year and month
+        yeararg = DateTime.Today.Year;
+        montharg = DateTime.Today.Month;
+
+        //there are two techniques to allow the use of navigational properties on your page
+        //      a) bring in a dataset of the table to which you are attempting to navigate
+        //      b) use the .Include method on the query itself (see Shipment query for this technique in BLL ShipmentServices)
+        
+        // Technique (a)
+        // this data set is needed to handle the navigation reference used on the table data cell
+        //           to display the shipper company name
+        // no other coding is needed, the system will match up the dataset to the usage in the table above
+        //shipperInfo = _shipperServices.Shipper_GetAll();
+    }
 
     private void GetShipments()
     {
-        
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        if (yeararg < 1950 || yeararg > DateTime.Today.Year)
+        {
+            errorMsgs.Add($"Invalid year {yeararg}. Year must be between 1950 and today.");
+        }
+        if (montharg < 1 || montharg > 12)
+        {
+            errorMsgs.Add($"Invalid month {montharg}. Month must be between 1 and 12.");
+        }
+
+        if (errorMsgs.Count == 0)
+        {
+            //assume search arguments contain valid data
+            try
+            {
+                //consume the service (go get the data)
+                shipmentInfo = _shipmentServices.Shipment_GetByYearandMonth(yeararg, montharg);
+
+            }
+            catch(ArgumentException ex)
+            {
+                errorMsgs.Add($"Data value error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                errorMsgs.Add($"system error: {ex.Message}");
+            }
+        }
     }
 }

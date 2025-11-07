@@ -27,13 +27,28 @@ public partial class Shipment
     [Unicode(false)]
     public string TrackingCode { get; set; }
 
+
+    //these properties are mapping the relational scheme between tables in the database
+
+    //the relation between Shipment and ManifestItem is 1:m
+    //Shipment is the parent
+    //ManifestItem is the childen
+    //how to quickly determine the relationship:
+    //the ICollection<T> return datatype indicates the child relationship
     [InverseProperty("Shipment")]
     public virtual ICollection<ManifestItem> ManifestItems { get; set; } = new List<ManifestItem>();
+
+    //the relation between Order and Shipment is 1:m
+    //Order is the parent
+    //Shipment is the childen
+    //how to quickly determine the relationship:
+    //the return datatype is just the entity type of the parent (indicates the parent relationship)
 
     [ForeignKey("OrderID")]
     [InverseProperty("Shipments")]
     public virtual Order Order { get; set; }
 
+    //the return datatype is just the entity type of the parent (indicates the parent relationship)
     [ForeignKey("ShipVia")]
     [InverseProperty("Shipments")]
     public virtual Shipper ShipViaNavigation { get; set; }
