@@ -12,6 +12,8 @@
 
 <br />
 
+
+
 @if (feedBackMsg.Length > 0)
 {
     <div class="alert alert-info">
@@ -31,7 +33,88 @@
         </ul>
     </div>
 }
+
+
+<div class="row">
+    <div class="col-md-3">
+        <p><strong>Input query values</strong></p>
+        <label for="year">Enter a year:</label>&nbsp;&nbsp;
+        <input id="year" type="number" style="width:100px;"
+               @bind="yeararg" />
+        <br/><br/>
+        <label for="month">Enter a month:</label>&nbsp;&nbsp;
+        <input id="month" type="number" style="width:100px;"
+               @bind="montharg" />
+        <br /><br />
+        <button type="submit" @onclick="GetShipments"
+                class="btn btn-outline-primary rounded-pill">
+            Fetch Shipments
+        </button>
+    </div>
+    <div class="col-md-9">
+        @if (shipmentInfo == null)
+        {
+            <p class="alert alert-info"> Enter desired year and month before searching.</p>
+        }
+        else if (shipmentInfo.Count == 0)
+        {
+            <p class="alert alert-info"> There are no shipments on file for @montharg / @yeararg</p>
+        }
+        else
+        {
+            //table
+            //to reduce the number of data rows being displayed there are two techniques
+            //a) pagination
+            //b) scrolling
+
+            //this example uses the Bootstrap Pagination tag:
+            //Required
+            //      total records possibly returned: totalItems
+            //      total required pages depending on totalItems: GetTotalPage()
+            //      current page number: currentPageNumber
+            //      items per page: itemsPerPage
+            //      collection to hold records that will be displayed
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Shipper</th>
+                        <th>Freight $</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in shipmentInfo)
+                    {
+                        <tr>
+                            <td>@item.ShipmentID</td>
+                            <td>@item.OrderID</td>
+                            <td>@item.ShippedDate</td>
+                            <td>@item.ShipVia</td>
+                            <td>@(string.Format("{0:#,##0.00}",item.FreightCharge))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+</div>
+
+
 @code {
     private string feedBackMsg = "";
     private List<String> errorMsgs = new();
+
+    private int yeararg = 0;
+    private int montharg = 0;
+
+    private List<Shipment> shipmentInfo = null;
+
+    private void GetShipments()
+    {
+        
+    }
 }
