@@ -10,8 +10,8 @@ namespace WestWindSystem.Entities;
 
 public partial class Territory
 {
-    [Key]
-    [StringLength(20)]
+    [Key,DatabaseGenerated(DatabaseGeneratedOption.None)]
+    [StringLength(20,MinimumLength = 1)]
     public string TerritoryID { get; set; }
 
     [Required]
