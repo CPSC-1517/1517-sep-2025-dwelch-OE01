@@ -165,12 +165,12 @@ this is optional
 
     <div class="row">
         <div class="col-md-12 text-center">
-            <button type="submit" class="btn btn-outline-primary rounded-pill"
+            <button type="button" class="btn btn-outline-primary rounded-pill"
                     @onclick="OnCreate" style="width:160px;">
                 Create    
             </button>
             &nbsp;&nbsp;
-            <button type="submit" class="btn btn-outline-secondary rounded-pill"
+            <button type="button" class="btn btn-outline-secondary rounded-pill"
                     @onclick="OnClear" style="width:160px;">
                 Clear
             </button>
@@ -326,8 +326,8 @@ this is optional
         //clear the current product instance of any data (not using local variables)
         //notice that the "system" constructor is used as the entity has NO constructor code within it
         currentProduct = new Product();
-        currentProduct.ProductName = "unknown";
-        currentProduct.QuantityPerUnit = "unknown";
+        // currentProduct.ProductName = "unknown";
+        // currentProduct.QuantityPerUnit = "unknown";
 
         //         IMPORTANT!!!!!!!!!!!!!!!!!!
         //         the editContext is associated with the current product instance
