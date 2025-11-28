@@ -1,4 +1,17 @@
-﻿@page "/productcrud"
+﻿@page "/productcrud/{productid:int?}"
+
+<!--
+on the page directive above, a routing parameter has been add syntax: /routingname/{parametername:datatype}
+this will allow an integer value to be passed to this page
+the routing parameter (productid) needs to be declare in your code area below
+
+if you have the situation where your receive page may or maynot receive a parameter
+value THEN make the datatype nullable (?)
+
+if your routing parameter is a string, you do NOT need to specify the routing parameter datatype HOWEVER you
+will still want to place a ? (nullable) character at the end of the routing parameter name (eg {StringPkey?})
+-->
+
 <PageTitle>Product CRUD</PageTitle>
 @rendermode InteractiveServer
 
@@ -162,12 +175,17 @@ this is optional
             <ValidationMessage For="@(() => currentProduct.UnitsOnOrder)" />
         </div>
     </div>
-
+    <br/><br/>
     <div class="row">
         <div class="col-md-12 text-center">
             <button type="button" class="btn btn-outline-primary rounded-pill"
                     @onclick="OnCreate" style="width:160px;">
                 Create    
+            </button>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-outline-primary rounded-pill"
+                    @onclick="OnUpdate" style="width:160px;">
+                Update
             </button>
             &nbsp;&nbsp;
             <button type="button" class="btn btn-outline-secondary rounded-pill"
@@ -205,9 +223,33 @@ this is optional
     public SupplierServices _supplierServices { get; set; }
     private List<Supplier> supplierList = new();
 
+    [Inject]
+    public ProductServices _productServices { get; set; }
+
+    //declare the routing parameter
+    //this property needs a special annotation to indicate it is a parameter
+    //parameter properties need to be accessible by other pages (aka classes)
+    //  therefore they need to be public
+    [Parameter]
+    public int? productid { get; set; }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        //when the page is first rendered, we need to determined if the page was called with
+        //   a pkey parameter value
+        // No value: assumption is a NEW (create) product will be done, nothing to lookup
+        // Yes value: assumption an existing product record will be altered or deleted
+        //            the current record on the database should be displayed to the user
+        //            within this method, lookup the record to display
+        //since the productid is a nullable variable, add the .Value to obtain the value,
+        //  and use .HasValue to test for the value
+
+        //NOTE: the retrieval of the product instance is REQUIRED BEFORE assigning the instance
+        //          to EditContext
+        if(productid.HasValue)
+            currentProduct = _productServices.Product_GetByID(productid.Value);
 
         //create the EditContext instance AND tie to the instance of the entity of the form
         editContext = new EditContext(currentProduct);
@@ -221,6 +263,8 @@ this is optional
         //fill the foreign key field collections
         categoryList = _categoryServices.Category_GetAll();
         supplierList = _supplierServices.Supplier_GetAll();
+
+
 
     }
 
@@ -294,8 +338,8 @@ this is optional
                 {
                     //the program assumes that the data is clean and can be further processed
                     //call the product services to receive the "good" data and add it to the database
-                    int newProductId = 0;
-                    //int newProductId = _productServices.Product_Add(currentProduct);
+
+                    int newProductId = _productServices.Product_Add(currentProduct);
 
                     //                 if an error was thrown by the ProductServices or by the database,
                     //                   control will be passed to the catch
@@ -312,6 +356,63 @@ this is optional
             feedBackMsg = $"System Error: {ex.Message}";
         }
 
+    }
+
+    private void OnUpdate()
+    {
+        //clear old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+        validationMessageStore.Clear();
+
+        try
+        {
+            if (editContext.Validate())
+            {
+                if (currentProduct.CategoryID == 0)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(currentProduct.CategoryID)),
+                                                "You must select a category");
+                }
+                if (currentProduct.SupplierID == 0)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(currentProduct.SupplierID)),
+                                            "You must select a supplier");
+                }
+                if (currentProduct.UnitPrice < 0.0m)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(currentProduct.UnitPrice)),
+                                           "Unit price must be zero or greater.");
+                }
+                if (editContext.GetValidationMessages().Any())
+                {
+                    //notify the editcontext that there has been a change to the message store
+                    editContext.NotifyValidationStateChanged();
+                }
+                else
+                {
+                    int rowsaffected = _productServices.Product_Update(currentProduct);
+
+                    //Question: DID you ACTUALLY change any records?
+                    //situation: an update was attempted but no records on the database were
+                    //              actually change AND the action did NOT abort
+                    //in this case rowsafftected = 0
+
+                    if (rowsaffected == 0)
+                    {
+                        feedBackMsg = $"Product {currentProduct.ProductName} (ID: {currentProduct.ProductID}) change failed.";
+                    }
+                    else
+                    {
+                        feedBackMsg = $"Product {currentProduct.ProductName} (ID: {currentProduct.ProductID}) change was save.";
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            feedBackMsg = $"System Error: {ex.Message}";
+        }
     }
     private void OnClear()
     {
