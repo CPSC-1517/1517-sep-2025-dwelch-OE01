@@ -166,7 +166,7 @@ this is optional
             <br />
             <label for="unitprice" class="form-label">Unit Price</label>
             <InputNumber id="unitprice" class="form-control"
-                         @bind-Value="currentProduct.UnitPrice" />
+                         @bind-Value="FormatUnitPrice" />
             <ValidationMessage For="@(() => currentProduct.UnitPrice)" />
             <br />
             <label for="unitsonorder" class="form-label">Units on Order</label>
@@ -188,9 +188,19 @@ this is optional
                 Update
             </button>
             &nbsp;&nbsp;
+            <button type="button" class="btn btn-outline-primary rounded-pill"
+                    @onclick="OnDiscontinued" style="width:160px;">
+                Discontinued
+            </button>
+            &nbsp;&nbsp;
             <button type="button" class="btn btn-outline-secondary rounded-pill"
                     @onclick="OnClear" style="width:160px;">
                 Clear
+            </button>
+            &nbsp;&nbsp;
+            <button type="button" class="btn btn-outline-secondary rounded-pill"
+                    @onclick="OnSearch" style="width:160px;">
+               Search
             </button>
         </div>
     </div>
@@ -226,12 +236,26 @@ this is optional
     [Inject]
     public ProductServices _productServices { get; set; }
 
+    //this javascript injection is needed to used the continue dialogue prompt
+    [Inject]
+    public IJSRuntime jSRuntime { get; set; }
+
+    [Inject]
+    private NavigationManager _navManager { get; set; } 
+
     //declare the routing parameter
     //this property needs a special annotation to indicate it is a parameter
     //parameter properties need to be accessible by other pages (aka classes)
     //  therefore they need to be public
     [Parameter]
     public int? productid { get; set; }
+
+
+    private decimal FormatUnitPrice
+    {
+        get { return Math.Round(currentProduct.UnitPrice,2); }
+        set { currentProduct.UnitPrice = value; }
+    }
 
     protected override void OnInitialized()
     {
@@ -414,25 +438,150 @@ this is optional
             feedBackMsg = $"System Error: {ex.Message}";
         }
     }
-    private void OnClear()
+
+    private void OnDiscontinued()
+    {
+        //clear old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+        validationMessageStore.Clear();
+
+        try
+        {
+            //the custom validation is dependent on how you manage your
+            //  product service method
+            //a) if you are NOT going to use the incoming data to update
+            //   your product before setting the Discontinued field to true
+            //   then you do NOT need to do this custom validation
+            //OR
+            //b) you are going to allow update and discontinue to happen on
+            //      the discontinue THEN you DO need to do this custom validation
+            if (editContext.Validate())
+            {
+                if (currentProduct.CategoryID == 0)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(currentProduct.CategoryID)),
+                                                "You must select a category");
+                }
+                if (currentProduct.SupplierID == 0)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(currentProduct.SupplierID)),
+                                            "You must select a supplier");
+                }
+                if (currentProduct.UnitPrice < 0.0m)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(currentProduct.UnitPrice)),
+                                           "Unit price must be zero or greater.");
+                }
+                if (editContext.GetValidationMessages().Any())
+                {
+                    //notify the editcontext that there has been a change to the message store
+                    editContext.NotifyValidationStateChanged();
+                }
+                else
+                {
+                    int rowsaffected = _productServices.Product_LogicalDelete(currentProduct);
+
+                    //Question: DID you ACTUALLY change any records?
+
+
+                    if (rowsaffected == 0)
+                    {
+                        feedBackMsg = $"Product {currentProduct.ProductName} (ID: {currentProduct.ProductID}) discontinue failed.";
+                    }
+                    else
+                    {
+                        feedBackMsg = $"Product {currentProduct.ProductName} (ID: {currentProduct.ProductID}) has been disconntinued.";
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            feedBackMsg = $"System Error: {ex.Message}";
+        }
+    }
+
+    // if you are going to physically remove a record that is of importance
+    //  CONSIDER prompting the user for confirmation BEFORE physically removing
+    //  the record
+    // private void OnRemoval()
+    // {
+    //     //clear old messages
+    //     feedBackMsg = "";
+    //     errorMsgs.Clear();
+    //     validationMessageStore.Clear();
+
+    //     try
+    //     {
+    //         int rowsaffected = _productServices.Product_PhysicalDelete(currentProduct);
+
+    //         //Question: DID you ACTUALLY change any records?
+
+    //         if (rowsaffected == 0)
+    //         {
+    //             feedBackMsg = $"Product {currentProduct.ProductName} (ID: {currentProduct.ProductID}) discontinue failed.";
+    //         }
+    //         else
+    //         {
+    //             feedBackMsg = $"Product {currentProduct.ProductName} (ID: {currentProduct.ProductID}) has been disconntinued.";
+    //         }
+
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         feedBackMsg = $"System Error: {ex.Message}";
+    //     }
+    // }
+
+    //this event will prompt the user to continue by using a javascript dialogue
+    //the program needs to WAIT until the user responses
+    //In this situation, the dialogue should be run in a separate task
+    //NOTE: the return datatype for this instance will be changed to async Task
+    private async Task OnClear()
     {
         //clear old messages
         feedBackMsg = "";
         errorMsgs.Clear();
 
-        //remove any old custom error messages placed in the Validation Message store
-        validationMessageStore.Clear();
+        //setup and execute the prompt dialogue
+        object[] messagestring = new object[]
+            {"Clearing the page will lose all unsaved data. Do you wish to continue?"};
+        if(await(jSRuntime.InvokeAsync<bool>("confirm",messagestring)))
+        {
+            //remove any old custom error messages placed in the Validation Message store
+            validationMessageStore.Clear();
 
-        //clear out the old values
-        //clear the current product instance of any data (not using local variables)
-        //notice that the "system" constructor is used as the entity has NO constructor code within it
-        currentProduct = new Product();
-        // currentProduct.ProductName = "unknown";
-        // currentProduct.QuantityPerUnit = "unknown";
+            //clear out the old values
+            //clear the current product instance of any data (not using local variables)
+            //notice that the "system" constructor is used as the entity has NO constructor code within it
+            currentProduct = new Product();
+            // currentProduct.ProductName = "unknown";
+            // currentProduct.QuantityPerUnit = "unknown";
 
-        //         IMPORTANT!!!!!!!!!!!!!!!!!!
-        //         the editContext is associated with the current product instance
-        //         the editContext REQUIRES to be reset to the NEW current product instance
-        editContext = new EditContext(currentProduct);
+            //         IMPORTANT!!!!!!!!!!!!!!!!!!
+            //         the editContext is associated with the current product instance
+            //         the editContext REQUIRES to be reset to the NEW current product instance
+            editContext = new EditContext(currentProduct);
+        }
+
+
+    }
+
+    private async Task OnSearch()
+    {
+        //clear old messages
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        //setup and execute the prompt dialogue
+        object[] messagestring = new object[]
+            {"Leaving the page will lose all unsaved data. Do you wish to continue?"};
+        if (await (jSRuntime.InvokeAsync<bool>("confirm", messagestring)))
+        {
+            _navManager.NavigateTo("/categoryproducts");
+        }
+
+
     }
 }

@@ -177,13 +177,10 @@ namespace WestWindSystem.BLL
 
         }
 
-
         //Delete: cruD
         //there are two types of deletes: physical and logical
         //Whether you have a physical or logical delete is determined WHEN
         //  the system is designed (database, data requirements)
-
-
 
         //Logical delete
         //this happens when the records is deemed "unwanted" BUT CANNOT be 
@@ -191,20 +188,14 @@ namespace WestWindSystem.BLL
         //  a relationship to another records (parent/child) and the associated record
         //  CANNOT be removed
 
-
-
         //Example: The product record is a parent to ManitfestItems records
         //         The manifest record is need for tracking, it goes to the receiver of the product
         //so, because the other record(s) are required for the business
         //      one CANNOT physically remove the ("parent") product record.
 
-
-
         //usually in this situation, the parent record (product) will have some type of field
         //  that will indicate "deleted"
         //on the product record such a field is the Discontinued field
-
-
 
         //Question: If the record will not be deleted, what happens?
         //Answer: here, you will actually do an update
